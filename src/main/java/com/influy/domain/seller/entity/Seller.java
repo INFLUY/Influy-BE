@@ -47,6 +47,11 @@ public class Seller extends BaseEntity {
     @Builder.Default
     private ItemSortType itemSortType = ItemSortType.CREATE_DATE;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "primary_announcement_id", unique = true)
+    private Announcement primaryAnnouncement;
+
+
     @OneToMany(mappedBy = "seller", cascade = CascadeType.ALL)
     @Builder.Default
     private List<Announcement> announcementList = new ArrayList<>();
