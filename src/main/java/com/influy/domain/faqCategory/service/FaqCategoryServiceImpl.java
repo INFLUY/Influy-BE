@@ -38,12 +38,20 @@ public class FaqCategoryServiceImpl implements FaqCategoryService {
 
         List<FaqCategory> faqCategoryList = new ArrayList<>();
 
-        for (FaqCategoryRequestDto.AddDto request : requestList) {
+        int nextNum = 0;
+        if (faqCategoryRepository.count() != 0) nextNum = faqCategoryRepository.findMaxOrder();
+
+
+        for (int i=0; i<requestList.size(); i++) {
+            FaqCategoryRequestDto.AddDto requestDto = requestList.get(i);
+
             // 중복 체크
-            boolean exists = faqCategoryRepository.existsByItemIdAndCategory(itemId, request.getCategory());
+            boolean exists = faqCategoryRepository.existsByItemIdAndCategory(itemId, requestDto.getCategory());
             if (exists) throw new GeneralException(ErrorStatus.FAQ_CATEGORY_ALREADY_EXISTS);
 
-            FaqCategory newFaqCategory= FaqCategoryConverter.toFaqCategory(request, item);
+            // 순서: 들어온 순서대로 nextNum부터 증가
+            nextNum += 1;
+            FaqCategory newFaqCategory= FaqCategoryConverter.toFaqCategory(requestDto, item, nextNum);
             faqCategoryList.add(newFaqCategory);
             item.getFaqCategoryList().add(newFaqCategory);
         }
@@ -57,7 +65,7 @@ public class FaqCategoryServiceImpl implements FaqCategoryService {
         if (!sellerRepository.existsById(sellerId)) throw new GeneralException(ErrorStatus.SELLER_NOT_FOUND);
         if (!itemRepository.existsById(itemId)) throw new GeneralException(ErrorStatus.ITEM_NOT_FOUND);
 
-        Pageable pageable = pageRequest.toPageable(Sort.by(Sort.Direction.ASC, "createdAt"));
+        Pageable pageable = pageRequest.toPageable(Sort.by(Sort.Direction.ASC, "categoryOrder"));
 
         return faqCategoryRepository.findAllByItemId(itemId, pageable);
     }
@@ -75,6 +83,12 @@ public class FaqCategoryServiceImpl implements FaqCategoryService {
 
             item.getFaqCategoryList().remove(faqCategory);
             faqCategoryRepository.delete(faqCategory);
+        }
+
+        List<FaqCategory> faqCategoryList = faqCategoryRepository.findAll();
+        for (int i=1; i<=faqCategoryList.size(); i++) {
+            FaqCategory faqCategory = faqCategoryList.get(i-1);
+            faqCategory.setCategoryOrder(i);
         }
     }
 
@@ -99,6 +113,15 @@ public class FaqCategoryServiceImpl implements FaqCategoryService {
             }
 
             if (request.getCategory() != null) faqCategory.setCategory(request.getCategory());
+            if (request.getCategoryOrder() != null) {
+                Integer newOrder = request.getCategoryOrder();
+                Integer oldOrder = faqCategory.getCategoryOrder();
+
+                if (!newOrder.equals(oldOrder)) {
+                    faqCategoryRepository.incrementOrdersFrom(item.getId(), newOrder, oldOrder);
+                    faqCategory.setCategoryOrder(newOrder);
+                }
+            }
 
             updatedList.add(faqCategory);
         }
