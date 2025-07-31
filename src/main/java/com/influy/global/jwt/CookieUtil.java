@@ -16,6 +16,7 @@ public class CookieUtil {
                 .path("/")
                 .maxAge(REFRESH_EXPIRE/1000)//초 단위로 변경
                 .sameSite("Lax")
+                .domain(".influy.com")
                 .build();
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
     }
