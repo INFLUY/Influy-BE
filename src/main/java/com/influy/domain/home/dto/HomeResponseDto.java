@@ -110,7 +110,19 @@ public class HomeResponseDto {
         private String sellerNickname;
 
         @Schema(description = "상품 3개 대표 이미지 리스트")
-        private List<String> mainImgList;
+        private List<SellerPickItemDto> mainImgList;
+    }
+
+    @Getter
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class SellerPickItemDto {
+        @Schema(description = "아이템 id", example = "1")
+        private Long itemId;
+
+        @Schema(description = "상품 대표 이미지")
+        private String mainImg;
     }
 
     @Getter
@@ -120,6 +132,8 @@ public class HomeResponseDto {
     public static class SellerHomeItemPageDTO {
         @Schema(description = "아이템 preview 리스트")
         private List<SellerHomeItemDTO> itemList;
+        @Schema(description = "톡박스 여부와 상관없이 아이템을 등록했는지", example = "true")
+        private Boolean hasAnyItem;
 
         private Integer listSize;
         private Integer totalPage;

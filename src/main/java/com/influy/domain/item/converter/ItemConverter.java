@@ -12,6 +12,7 @@ import com.influy.domain.sellerProfile.entity.SellerProfile;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -99,8 +100,8 @@ public class ItemConverter {
     public static ItemResponseDto.DetailViewDto toDetailViewDto(Item item) {
         List<String> itemImgLinkList = item.getImageList();
 
-        List<String> itemCategoryList = item.getItemCategoryList().stream()
-                .map(ic -> ic.getCategory().getCategory())
+        List<Long> itemCategoryList = item.getItemCategoryList().stream()
+                .map(ic -> ic.getCategory().getId())
                 .toList();
 
         return ItemResponseDto.DetailViewDto.builder()
@@ -166,7 +167,7 @@ public class ItemConverter {
                 .build();
     }
 
-    public static ItemResponseDto.TalkBoxOpenedListDto toTalkBoxOpenedListDto(List<Item> itemList, Map<Long, Integer> waitingCntMap, Map<Long, Integer> completedCntMap, Map<Long, Integer> unCheckedCntMap) {
+    public static ItemResponseDto.TalkBoxOpenedListDto toTalkBoxOpenedListDto(List<Item> itemList, Boolean flag, Map<Long, Integer> waitingCntMap, Map<Long, Integer> completedCntMap, Map<Long, Integer> unCheckedCntMap) {
         List<ItemResponseDto.TalkBoxOpenedDto> itemDtoList = itemList.stream()
                 .map(item -> {
                     Long itemId = item.getId();
@@ -179,7 +180,28 @@ public class ItemConverter {
 
         return ItemResponseDto.TalkBoxOpenedListDto.builder()
                 .cnt(itemList.size())
+                .isItemExist(flag)
                 .talkBoxOpenedDtoList(itemDtoList)
                 .build();
+    }
+
+    public static Item duplicateItem(SellerProfile seller, Item item) {
+
+        return Item.builder()
+                .seller(seller)
+                .name(item.getName())
+                .regularPrice(item.getRegularPrice())
+                .salePrice(item.getSalePrice())
+                .tagline(item.getTagline())
+                .startDate(item.getStartDate())
+                .endDate(item.getEndDate())
+                .itemPeriod(item.getItemPeriod())
+                .marketLink(item.getMarketLink())
+                .comment(item.getComment())
+                .isArchived(item.getIsArchived())
+                .itemStatus(item.getItemStatus())
+                .isDateUndefined(item.getIsDateUndefined())
+                .build();
+
     }
 }

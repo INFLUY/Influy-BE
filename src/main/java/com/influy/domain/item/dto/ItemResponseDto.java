@@ -142,8 +142,8 @@ public class ItemResponseDto {
         @Schema(description = "아이템 사진 리스트, 대표사진은 리스트 맨 처음 순서로", example = "[xxx.png, xxxxx.png, xxxxxx.png]")
         private List<String> itemImgList;
 
-        @Schema(description = "아이템 카테고리, 1~3개", example = "[뷰티, 패션, 소품]")
-        private List<String> itemCategoryList;
+        @Schema(description = "아이템 카테고리, 1~3개", example = "[1,3,5]")
+        private List<Long> itemCategoryList;
     }
 
     @Getter
@@ -222,6 +222,9 @@ public class ItemResponseDto {
     public static class TalkBoxOpenedListDto {
         @Schema(description = "톡박스가 활성화된 아이템 리스트")
         private List<TalkBoxOpenedDto> talkBoxOpenedDtoList;
+
+        @Schema(description = "셀러의 아이템 유무 여부", example = "true")
+        private Boolean isItemExist;
 
         @Schema(description = "톡박스가 활성화된 아이템 개수", example = "4")
         private Integer cnt;

@@ -66,12 +66,15 @@ public class HomeConverter {
                 .build();
     }
 
-    public static HomeResponseDto.SellerHomeItemPageDTO toSellerHomeItemPageDTO(Page<ItemJPQLResponse.ItemWithQuestionStatus> itmePage, Map<Long, List<String>> topNCategoryMap) {
+    public static HomeResponseDto.SellerHomeItemPageDTO toSellerHomeItemPageDTO(Page<ItemJPQLResponse.ItemWithQuestionStatus> itmePage,
+                                                                                Map<Long, List<String>> topNCategoryMap,
+                                                                                Boolean hasAnyItem) {
         List<HomeResponseDto.SellerHomeItemDTO> itemsList = itmePage.stream().map(item->toSellerHomeItemDTO(item, topNCategoryMap.get(item.getItem().getId()))).toList();
         return HomeResponseDto.SellerHomeItemPageDTO.builder()
                 .itemList(itemsList)
                 .totalPage(itmePage.getTotalPages())
                 .totalElements(itmePage.getTotalElements())
+                .hasAnyItem(hasAnyItem)
                 .isFirst(itmePage.isFirst())
                 .isLast(itmePage.isLast())
                 .listSize(itemsList.size())
@@ -95,11 +98,18 @@ public class HomeConverter {
                 .build();
     }
 
+    public static HomeResponseDto.SellerPickItemDto toSellerPickItemDto(Item item) {
+        return HomeResponseDto.SellerPickItemDto.builder()
+                .itemId(item.getId())
+                .mainImg(item.getMainImg())
+                .build();
+    }
+
     public static HomeResponseDto.SellerPick3Dto toSellerPick3Dto(SellerProfile seller, List<Item> itemList) {
         return HomeResponseDto.SellerPick3Dto.builder()
                 .sellerId(seller.getId())
                 .sellerNickname(seller.getMember().getNickname())
-                .mainImgList(itemList.stream().map(Item::getMainImg).toList())
+                .mainImgList(itemList.stream().map(HomeConverter::toSellerPickItemDto).toList())
                 .build();
     }
 }
