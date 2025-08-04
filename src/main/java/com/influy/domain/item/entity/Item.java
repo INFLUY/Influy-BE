@@ -45,9 +45,6 @@ public class Item extends BaseEntity {
 
     @NotNull
     @Builder.Default
-    private boolean isDateUndefined = false;
-
-    @Builder.Default
     private Boolean isDateUndefined = false;
 
     @Builder.Default
