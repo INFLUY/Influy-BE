@@ -1,5 +1,5 @@
 # build stage
-FROM amazoncorretto:21 AS Builder
+FROM amazoncorretto:21 AS builder
 
 WORKDIR /app
 
